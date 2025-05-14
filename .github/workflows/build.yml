@@ -4,7 +4,7 @@ on: push
 
 env:
   # change this variable to a release of https://github.com/matrix-org/matrix-ios-sdk/releases
-  RELEASE_VERSION: v0.27.6
+  RELEASE_VERSION: v0.27.17
 
 jobs:
   build:
@@ -16,11 +16,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-      
+
     - name: Checkout matrix-ios-sdk
       uses: actions/checkout@v3
       with:
-        repository: Topheee/matrix-ios-sdk
+        repository: brandonmaul/matrix-ios-sdk
         ref: swift-package-${{ env.RELEASE_VERSION }}
         path: matrix-ios-sdk
 
@@ -31,7 +31,7 @@ jobs:
         # CocoaPods
         path: Pods
         key: cocoapods-deps-${{ hashFiles('**/Podfile.lock') }}
-        
+
     - if: ${{ steps.cache-cocoapods.outputs.cache-hit != 'true' }}
       name: Install Pods
       working-directory: matrix-ios-sdk
@@ -114,7 +114,7 @@ jobs:
     - name: Make XCFramework
       run: |
         iOSBCMaps=()
-        
+
         echo "Finding iOS Bitcode Symbol Maps"
         while IFS= read -d '' -r filename; do
             iOSBCMaps+=("$filename")
@@ -123,31 +123,31 @@ jobs:
         set +u
         iOSBCMapCount=${#iOSBCMaps[@]}
         set -u
-        
+
         iOSDebugSymbols=""
-        
+
         echo "Generating iOS Bitcode Symbol Map command"
         for ((i=0;i<iOSBCMapCount;i++)); do
           iOSDebugSymbols="${iOSDebugSymbols} -debug-symbols ${iOSBCMaps[i]}"
         done
-        
+
         echo "Creating XCFramework"
         frameworks=""
         for archive_path_suffix in iOS iOSSimulator; do
           frameworks="${frameworks} -framework MatrixSDK-${archive_path_suffix}.xcarchive/Products/Library/Frameworks/MatrixSDK.framework -debug-symbols $(pwd -P)/MatrixSDK-${archive_path_suffix}.xcarchive/dSYMs/MatrixSDK.framework.dSYM"
         done
-        
+
         # somehow the macOS target does not produce a dSYM file
         frameworks="${frameworks} -framework MatrixSDK-macOS.xcarchive/Products/Library/Frameworks/MatrixSDK.framework"
-        
+
         xcodebuild -create-xcframework $frameworks -output MatrixSDK.xcframework
         zip -ry MatrixSDK.xcframework.zip MatrixSDK.xcframework
-        
+
     - name: Update Package Manifest
       run: |
         swift package compute-checksum MatrixSDK.xcframework.zip > MatrixSDK.xcframework.zip.checksum
         swift generate-package.swift "https://github.com/${{ github.repository_owner }}/MatrixSDK/releases/download/${{ env.RELEASE_VERSION }}/MatrixSDK.xcframework.zip" "$(cat MatrixSDK.xcframework.zip.checksum)"
-        
+
     - name: Push and Tag
       run: |
         git config user.name github-actions
@@ -157,7 +157,7 @@ jobs:
         git push
         git tag ${{ env.RELEASE_VERSION }}
         git push origin ${{ env.RELEASE_VERSION }}
-        
+
     - name: Create Release
       id: create-release
       uses: ncipollo/release-action@v1
