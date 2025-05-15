@@ -1,4 +1,4 @@
-name: Build and Release!
+name: Build and Release
 
 on: push
 
@@ -83,7 +83,7 @@ jobs:
         plutil -insert CFBundleVersion            -string $GITHUB_RUN_NUMBER "${plist_path}"
 
     - name: "Save ${{ matrix.platform }} Framework"
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4.6.2
       with:
         name: "${{ matrix.platform }} Framework"
         path: matrix-ios-sdk/build/*.xcarchive
