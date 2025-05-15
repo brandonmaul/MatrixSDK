@@ -18,7 +18,7 @@ jobs:
       contents: write
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4.2.2
       with:
         fetch-depth: 0         # grab full history and tags
         ref: ${{ github.ref }} # check out the same branch or tag that triggered the workflow
@@ -32,7 +32,7 @@ jobs:
       run: xcodebuild -version
 
     - name: Checkout matrix-ios-sdk
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4.2.2
       with:
         repository: brandonmaul/matrix-ios-sdk
         ref: swift-package-${{ env.RELEASE_VERSION }}
@@ -113,7 +113,7 @@ jobs:
       contents: write
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4.2.2
       with:
         fetch-depth: 0        # grab full history and tags
         ref: ${{ github.ref }} # check out the same branch or tag that triggered the workflow
