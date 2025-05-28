@@ -34,7 +34,7 @@ jobs:
     - name: Checkout matrix-ios-sdk
       uses: actions/checkout@v4.2.2
       with:
-        repository: brandonmaul/matrix-ios-sdk
+        repository: brandonmaul/matrix-ios-sdk-swift-pkg-src
         ref: swift-package-${{ env.RELEASE_VERSION }}
         path: matrix-ios-sdk
 
